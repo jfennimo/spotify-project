@@ -1,22 +1,45 @@
 import React, { useState } from "react";
-import { Carousel, Radio } from "antd";
-
-const carouselStyle = {
-  margin: "0 auto 40px auto",
-};
-
-const imageStyle = {
-  width: "100%",
-  height: "300px",
-  objectFit: "cover",
-  borderRadius: "4px",
-};
+import { Image, Carousel, Button, Form, Input } from "antd";
 
 export default function App() {
-  const [dotPosition, setDotPosition] = useState("top");
-  const handlePositionChange = ({ target: { value } }) => {
-    setDotPosition(value);
+  const [tracks, setTracks] = useState([]);
+
+  const carouselStyles = {
+    width: "640px",
+    border: "solid 1px #000",
+    margin: "auto",
   };
+
+  const onFinish = (values) => {
+    console.log("Success:", values);
+  };
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
+
+  async function fetchData() {
+    const baseURL = "https://www.apitutor.org/spotify/simple/v1/search";
+    const url = `${baseURL}?q=${searchTerm}&type=${dataType}&limit=5`;
+    const request = await fetch(url);
+    const data = await request.json();
+    console.log(data);
+    setTracks(data.tracks.items);
+  }
+
+  function trackToJSX(trackJSON) {
+    return (
+      <iframe
+        key={trackJSON.id}
+        src={`https://open.spotify.com/embed/track/${trackJSON.id}`}
+        width="100%"
+        border="0"
+        height="352"
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+      ></iframe>
+    );
+  }
 
   return (
     <>
@@ -24,65 +47,67 @@ export default function App() {
         <h1>Spotify Demo</h1>
       </header>
       <main>
-        <p>Hello React!</p>
-        <Carousel style={carouselStyle} autoplay={true}>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=9"
-              alt="Alt text"
-            />
-          </div>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=10"
-              alt="Alt text"
-            />
-          </div>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=11"
-              alt="Alt text"
-            />
-          </div>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=12"
-              alt="Alt text"
-            />
-          </div>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=13"
-              alt="Alt text"
-            />
-          </div>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=14"
-              alt="Alt text"
-            />
-          </div>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=15"
-              alt="Alt text"
-            />
-          </div>
-          <div>
-            <img
-              style={imageStyle}
-              src="https://picsum.photos/1200/300?id=16"
-              alt="Alt text"
-            />
-          </div>
-        </Carousel>
+        <Form
+          name="basic"
+          labelCol={{
+            span: 8,
+          }}
+          wrapperCol={{
+            span: 16,
+          }}
+          style={{
+            maxWidth: 600,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Search Term:"
+            name="searchterm"
+            initialValue={"Built to Spill"}
+            rules={[
+              {
+                required: true,
+                message: "Please input a search term!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Limit:"
+            name="limit"
+            initialValue={5}
+            rules={[
+              {
+                required: true,
+                message: "Please input a number of tracks to display!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+
+        <Form.Item
+          wrapperCol={{
+            offset: 8,
+            span: 16,
+          }}
+        >
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+
+        <div style={carouselStyles}>
+          <Carousel dotPosition="top">{tracks.map(trackToJSX)}</Carousel>
+        </div>
       </main>
     </>
   );
