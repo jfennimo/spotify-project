@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, Carousel, Button, Form, Input } from "antd";
+import { Carousel, Button, Form, Input } from "antd";
 
 export default function App() {
   const [tracks, setTracks] = useState([]);
@@ -12,25 +12,32 @@ export default function App() {
 
   const onFinish = (values) => {
     console.log("Success:", values);
+    fetchData(values.searchTerm, values.limit);
   };
+
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
-  async function fetchData() {
+  async function fetchData(searchTerm, limit) {
     const baseURL = "https://www.apitutor.org/spotify/simple/v1/search";
-    const url = `${baseURL}?q=${searchTerm}&type=${dataType}&limit=5`;
+    const url = `${baseURL}?q=${searchTerm}&type=track&limit=${limit}`;
     const request = await fetch(url);
     const data = await request.json();
     console.log(data);
-    setTracks(data.tracks.items);
+    setTracks(data);
+  }
+
+  function embedded(id) {
+    return `https://open.spotify.com/embed/track/${id}?utm_source=generator`;
   }
 
   function trackToJSX(trackJSON) {
+    const embedURL = embedded(trackJSON.id);
     return (
       <iframe
         key={trackJSON.id}
-        src={`https://open.spotify.com/embed/track/${trackJSON.id}`}
+        src={embedURL}
         width="100%"
         border="0"
         height="352"
@@ -67,8 +74,8 @@ export default function App() {
         >
           <Form.Item
             label="Search Term:"
-            name="searchterm"
-            initialValue={"Built to Spill"}
+            name="searchTerm"
+            initialValue={"Built To Spill"}
             rules={[
               {
                 required: true,
@@ -92,18 +99,18 @@ export default function App() {
           >
             <Input />
           </Form.Item>
-        </Form>
 
-        <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
+          <Form.Item
+            wrapperCol={{
+              offset: 8,
+              span: 16,
+            }}
+          >
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
 
         <div style={carouselStyles}>
           <Carousel dotPosition="top">{tracks.map(trackToJSX)}</Carousel>
