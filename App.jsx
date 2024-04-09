@@ -4,9 +4,15 @@ import { Carousel, Button, Form, Input } from "antd";
 export default function App() {
   const [tracks, setTracks] = useState([]);
 
+  // Removed border to get rid of black outline around carousel
   const carouselStyles = {
     width: "640px",
-    border: "solid 1px #000",
+    margin: "auto",
+  };
+
+  // Couldn't get limit to be a width of 128px like I intended, I know I'm missing something
+  const formStyles = {
+    width: "640px",
     margin: "auto",
   };
 
@@ -54,63 +60,65 @@ export default function App() {
         <h1>Spotify Demo</h1>
       </header>
       <main>
-        <Form
-          name="basic"
-          labelCol={{
-            span: 8,
-          }}
-          wrapperCol={{
-            span: 16,
-          }}
-          style={{
-            maxWidth: 600,
-          }}
-          initialValues={{
-            remember: true,
-          }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Search Term:"
-            name="searchTerm"
-            initialValue={"Built To Spill"}
-            rules={[
-              {
-                required: true,
-                message: "Please input a search term!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Limit:"
-            name="limit"
-            initialValue={5}
-            rules={[
-              {
-                required: true,
-                message: "Please input a number of tracks to display!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
+        <div style={formStyles}>
+          <Form
+            name="basic"
+            labelCol={{
+              span: 8,
+            }}
             wrapperCol={{
-              offset: 8,
               span: 16,
             }}
+            style={{
+              maxWidth: 600,
+            }}
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
           >
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
+            <Form.Item
+              label="Search Term:"
+              name="searchTerm"
+              initialValue={"Built To Spill"}
+              rules={[
+                {
+                  required: true,
+                  message: "Please input a search term!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Limit:"
+              name="limit"
+              initialValue={5}
+              rules={[
+                {
+                  required: true,
+                  message: "Please input a number of tracks to display!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              wrapperCol={{
+                offset: 8,
+                span: 16,
+              }}
+            >
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
 
         <div style={carouselStyles}>
           <Carousel dotPosition="top">{tracks.map(trackToJSX)}</Carousel>
